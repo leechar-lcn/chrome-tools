@@ -1,0 +1,27 @@
+{
+  "name": "chrome-tools",
+  "version": "1.0",
+  "manifest_version": 2,
+  "background": {
+    "scripts": [
+      "expand.js",
+      "demo.js",
+      "background.js"
+    ],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.baidu.com/*"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ],
+  "permissions": [
+    "contextMenus",
+    "tabs"
+  ]
+}
