@@ -1,27 +1,16 @@
 {
-  "name": "chrome-tools",
+  "name": "AutoFill",
   "version": "1.0",
   "manifest_version": 2,
-  "background": {
-    "scripts": [
-      "expand.js",
-      "demo.js",
-      "background.js"
-    ],
-    "persistent": false
-  },
   "content_scripts": [
     {
+      "run_at": "document_end",
       "matches": [
-        "https://www.baidu.com/*"
+        "<all_urls>"
       ],
       "js": [
-        "content.js"
+        "index.js"
       ]
     }
-  ],
-  "permissions": [
-    "contextMenus",
-    "tabs"
   ]
 }
