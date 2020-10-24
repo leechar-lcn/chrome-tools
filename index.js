@@ -1,48 +1,113 @@
-const style = `
-position: fixed;
-right: 50px;
-bottom: 50px;
-text-align: center;
-line-height: 80px;
-width: 80px;
-height: 80px;
-border-radius: 50%;
-background-color: gray;
-color: #fff;
-cursor: pointer;
-box-shadow: rgb(101 82 255) 0 0 10px;
-user-select: none;
-`
-
-let enable = false
+let enable = false;
+const v1 = uuid.v1;
 
 const createElement = () => {
-	const div = document.createElement('div')
+  const div = document.createElement("div");
+  div.innerText = "AutoFill";
+  div.style.cssText = `
+	position: fixed;
+	z-index: 99999999;
+	right: 50px;
+	bottom: 50px;
+	text-align: center;
+	line-height: 80px;
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	background-color: gray;
+	color: #fff;
+	cursor: pointer;
+	box-shadow: rgb(101 82 255) 0 0 10px;
+	user-select: none;
+	`;
 
-	div.innerText = 'AutoFill'
-	div.style.cssText = style
+  document.body.append(div);
 
-	document.body.append(div)
+  return div;
+};
 
-	return div
-}
+const onRemember = (id) => {
+  console.log(id);
+};
 
-const controllAllForm = use => {
-	const FORMELEMENT = 'input,textarea,select,radio'
+const onClear = (id) => {
+  console.log(id);
+};
 
-	const allForm = [...document.querySelectorAll(FORMELEMENT)].filter(
-		ele => ele.type !== 'submit' && (ele.className !== '' || ele.id !== '')
-	)
+const createFloatWindow = (x, y, id) => {
+  let div = document.getElementById(id);
 
-	// TODO use 为true时，给所有表单的右上角添加一个浮窗按钮，文本为 【记住】。use 为 false 时，把所有表单的浮窗去掉。
-	if (use) {
-	} else {
-	}
-}
+  if (!div) {
+    div = document.createElement("div");
+    document.body.append(div);
+  }
 
-const onClick = e => {
-	e.target.style.backgroundColor = (enable = !enable) ? 'blue' : 'gray'
-	controllAllForm(enable)
-}
+  div.id = id;
+  div.style.cssText = `
+	width: 100px;
+	height:	40px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+	z-index: 999999;
+	left: ${x}px;
+	top: ${y - 40}px;
+	background: blue;
+	color: #fff;
+`;
 
-createElement().addEventListener('click', onClick)
+  const remember = $(
+    `<span style="margin-right: 10px;padding-right: 10px;border-right: 1px solid #ddd;cursor: pointer">记住</span>`
+  ).on("click", () => onRemember(id));
+
+  const clear = $(`<span style="cursor: pointer">清除</span>`).on("click", () =>
+    onClear(id)
+  );
+
+  $(div).html("");
+  $(div).append(remember, clear);
+
+  return div;
+};
+
+const controllAllForm = (use) => {
+  const FORMELEMENT = "input,textarea,select,radio";
+
+  const allForm = [...document.querySelectorAll(FORMELEMENT)]
+    .filter(
+      (ele) => ele.type !== "submit" && (ele.className !== "" || ele.id !== "")
+    )
+    .map((ele) => {
+      if (!ele.dataset.autofill) {
+        ele.dataset.autofill = v1();
+      }
+
+      return ele;
+    });
+
+  allForm.forEach((ele) => {
+    const id = ele.dataset.autofill;
+    if (use) {
+      const { x, y } = ele.getBoundingClientRect();
+      createFloatWindow(x, y, id);
+    } else {
+      let target = document.getElementById(id);
+      target && (target.style.display = "none");
+    }
+  });
+};
+
+const onClick = (e) => {
+  e.target.style.backgroundColor = (enable = !enable) ? "blue" : "gray";
+  controllAllForm(enable);
+};
+
+createElement().addEventListener("click", onClick);
+
+window.addEventListener("resize", () => controllAllForm(enable));
+window.addEventListener("popstate", () => {
+  console.log(1);
+  enable = false;
+  controllAllForm(false);
+});

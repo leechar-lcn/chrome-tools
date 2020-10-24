@@ -9,6 +9,8 @@
         "<all_urls>"
       ],
       "js": [
+        "jquery.js",
+        "uuid.js",
         "index.js"
       ]
     }
