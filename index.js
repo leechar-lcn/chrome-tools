@@ -25,18 +25,19 @@ const injectPathForNextElement = (ele, path, paths) => {
 const injectPathForFormElement = (children, path, paths = []) => {
   Array.from(children).forEach((item, i) => {
     const { children: itemChild } = item;
-    injectPathForNextElement(item.nextElementSibling, path, paths);
 
     if (itemChild && itemChild.length) {
       injectPathForFormElement(itemChild, path + "-" + i, paths);
-    } else {
-      if (!item.dataset.autofillPath) {
-        if (rightFormElement(item)) {
-          paths.push(path);
-          item.dataset.autofillPath = path;
-        }
+    }
+
+    if (!item.dataset.autofillPath) {
+      if (rightFormElement(item)) {
+        paths.push(path);
+        item.dataset.autofillPath = path;
       }
     }
+
+    injectPathForNextElement(item.nextElementSibling, path, paths);
   });
 
   return paths;
@@ -55,8 +56,8 @@ const restoreDataFromStorage = (paths) => {
   });
 };
 
-// 创建启动按钮
-const createElement = () => {
+// 创建触发器
+const createTrigger = () => {
   const div = document.createElement("div");
   div.innerText = "AutoFill";
   div.style.cssText = `
@@ -140,9 +141,7 @@ const createFloatWindow = (x, y, id) => {
 // 控制浮窗的显示状态
 const controllAllForm = (use) => {
   const allForm = [...document.querySelectorAll(FORMELEMENT)]
-    .filter(
-      (ele) => ele.type !== "submit" && (ele.className !== "" || ele.id !== "")
-    )
+    .filter((ele) => ele.type !== "submit")
     .map((ele) => {
       if (!ele.dataset.autofill) {
         ele.dataset.autofill = v1();
@@ -172,5 +171,5 @@ const onClick = (e) => {
 
 const paths = injectPathForFormElement(document.body.children, "0");
 restoreDataFromStorage(paths);
-createElement().addEventListener("click", onClick);
+createTrigger().addEventListener("click", onClick);
 window.addEventListener("resize", () => controllAllForm(enable));
