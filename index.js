@@ -1,3 +1,7 @@
+/*
+ * @version: v0.0.1
+ */
+
 let enable = false;
 const v1 = uuid.v1;
 
@@ -100,7 +104,7 @@ const onClear = (id) => {
   }
 };
 
-// 记住和清楚的浮窗
+// 创建浮窗
 const createFloatWindow = (x, y, id) => {
   let div = document.getElementById(id);
 
@@ -139,7 +143,7 @@ const createFloatWindow = (x, y, id) => {
 };
 
 // 控制浮窗的显示状态
-const controllAllForm = (use) => {
+const controllFloatWindow = (use) => {
   const allForm = [...document.querySelectorAll(FORMELEMENT)]
     .filter((ele) => ele.type !== "submit")
     .map((ele) => {
@@ -166,10 +170,10 @@ const controllAllForm = (use) => {
 // autofill 点击事件
 const onClick = (e) => {
   e.target.style.backgroundColor = (enable = !enable) ? "blue" : "gray";
-  controllAllForm(enable);
+  controllFloatWindow(enable);
 };
 
 const paths = injectPathForFormElement(document.body.children, "0");
 restoreDataFromStorage(paths);
 createTrigger().addEventListener("click", onClick);
-window.addEventListener("resize", () => controllAllForm(enable));
+window.addEventListener("resize", () => controllFloatWindow(enable));
