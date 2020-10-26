@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * @version: v0.0.2
+=======
+ * @version: v0.0.1
+>>>>>>> master
  */
 
 let enable = false;
@@ -47,6 +51,8 @@ const injectPathForFormElement = (children, path, paths = []) => {
   return paths;
 };
 
+const event = new Event("input", { bubbles: true });
+
 // 恢复数据
 const restoreDataFromStorage = (paths) => {
   paths.forEach((path) => {
@@ -55,6 +61,7 @@ const restoreDataFromStorage = (paths) => {
       let cache = localStorage.getItem(path);
       if (cache) {
         target.value = cache;
+        target.dispatchEvent(event);
       }
     }
   });
