@@ -4,16 +4,17 @@
 
 type Direction = "top" | "right" | "bottom" | "left";
 
-// @ts-ignore
-let enable = false;
-// @ts-ignore
-const v1 = uuid.v1;
-
+// 全局变量
 const FORMELEMENT = "input,textarea,select,radio";
-
 const ua = navigator.userAgent;
 const isMac = /Mac/i.test(ua);
 const isWin = /windows/i.test(ua);
+let enable = false;
+let trigger: HTMLElement;
+
+// 全局方法
+// @ts-ignore
+const v1 = uuid.v1;
 
 const rightFormElement = (ele: HTMLElement) => {
   if (ele.tagName === "A" || ele.tagName === "P") return false;
@@ -31,6 +32,8 @@ const getCache = (key: string) => {
 const clearCache = (key: string) => {
   return localStorage.removeItem(key);
 };
+
+// ----------------------------------------------------------------------------------------------------------------
 
 /** 给下一个兄弟元素注入索引 */
 const injectPathForNextElement = (
@@ -83,15 +86,14 @@ const injectPathForFormElement = (
   return paths;
 };
 
-// @ts-ignore
-const eventTarget = new Event("input", { bubbles: true });
-
 /** 恢复数据 */
 const restoreDataFromStorage = (paths: string[]) => {
+  const eventTarget = new Event("input", { bubbles: true });
   paths.forEach((path) => {
     const target = document.querySelector(`[data-autofill-path="${path}"]`);
     if (target) {
       let cache = getCache(path);
+
       if (cache) {
         // @ts-ignore
         target.value = cache;
@@ -155,6 +157,7 @@ const onClear = (id: string) => {
   }
 };
 
+// 点击触发器
 const onClick = (e: MouseEvent) => {
   // @ts-ignore
   e.target.style.backgroundColor = (enable = !enable) ? "blue" : "gray";
@@ -284,11 +287,15 @@ const keydown = (e: KeyboardEvent) => {
   }
 };
 
-const paths = injectPathForFormElement(document.body.children as any, "0");
-restoreDataFromStorage(paths);
+const start = () => {
+  const paths = injectPathForFormElement(document.body.children as any, "0");
+  restoreDataFromStorage(paths);
 
-const trigger = createTrigger();
-trigger.addEventListener("click", onClick);
+  trigger = createTrigger();
+  trigger.addEventListener("click", onClick);
 
-window.addEventListener("resize", () => controllFloatWindow(enable));
-window.addEventListener("keydown", keydown);
+  window.addEventListener("resize", () => controllFloatWindow(enable));
+  window.addEventListener("keydown", keydown);
+};
+
+start();
