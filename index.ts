@@ -301,7 +301,6 @@ const support = (url: string[]) => {
   if (isExists) start();
 };
 
-chrome.runtime.onMessage.addListener(support);
 chrome.storage.sync.get("autofill", ({ autofill }) => {
   if (autofill) {
     const urls = autofill
