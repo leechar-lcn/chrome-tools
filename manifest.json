@@ -12,6 +12,7 @@
         "<all_urls>"
       ],
       "js": [
+        "./utils/console.js",
         "./utils/jquery.js",
         "./utils/uuid.js",
         "./lib/index.js"

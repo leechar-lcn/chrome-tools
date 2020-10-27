@@ -2,8 +2,6 @@
  * @version: v0.0.1
  */
 
-type Direction = "top" | "right" | "bottom" | "left";
-
 // 全局变量
 const FORMELEMENT = "input,textarea,select,radio";
 const ua = navigator.userAgent;
@@ -162,27 +160,15 @@ const onClick = (e: MouseEvent) => {
   controllFloatWindow(enable);
 };
 
-/** 创建浮窗的方向控制器 */
-const createDirectionController = (
-  ele: HTMLElement,
-  direction: Direction
-) => {};
-
 /** 自动调整浮窗的位置 */
 const adjustmentFloatWindiwPos = (ele: HTMLElement, DOMRect: DOMRect) => {
-  let direction: Direction = "top";
-
   const { y } = ele.getBoundingClientRect();
   const { height, y: baseY } = DOMRect;
 
   // 顶部被挡住了
   if (y < 0) {
     $(ele).css({ top: height + baseY });
-
-    direction = "bottom";
   }
-
-  return direction;
 };
 
 /** 创建浮窗 */
@@ -222,8 +208,7 @@ const createFloatWindow = (DOMRect: DOMRect, id: string) => {
   $(div).html("");
   $(div).append(remember, clear);
 
-  const direction = adjustmentFloatWindiwPos(div, DOMRect);
-  createDirectionController(div, direction);
+  adjustmentFloatWindiwPos(div, DOMRect);
 
   return div;
 };
@@ -301,13 +286,17 @@ const support = (url: string[]) => {
   if (isExists) start();
 };
 
-chrome.storage.sync.get("autofill", ({ autofill }) => {
-  if (autofill) {
-    const urls = autofill
-      .split(/[\s\n]/)
-      .filter(Boolean)
-      .map((item: string) => item.trim());
+if (chrome.storage) {
+  chrome.storage.sync.get("autofill", ({ autofill }) => {
+    if (autofill) {
+      const urls = autofill
+        .split(/[\s\n]/)
+        .filter(Boolean)
+        .map((item: string) => item.trim());
 
-    support(urls);
-  }
-});
+      support(urls);
+    }
+  });
+}
+
+if (location.origin === "http://127.0.0.1:5500") start();
