@@ -296,4 +296,19 @@ const start = () => {
   window.addEventListener("keydown", keydown);
 };
 
-start();
+const support = (url: string[]) => {
+  const isExists = url.some((item) => item.startsWith(location.origin));
+  if (isExists) start();
+};
+
+chrome.runtime.onMessage.addListener(support);
+chrome.storage.sync.get("autofill", ({ autofill }) => {
+  if (autofill) {
+    const urls = autofill
+      .split(/[\s\n]/)
+      .filter(Boolean)
+      .map((item: string) => item.trim());
+
+    support(urls);
+  }
+});

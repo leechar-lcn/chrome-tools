@@ -3,7 +3,7 @@
     "lib": [
       "DOM",
       "DOM.Iterable",
-      "ESNext"
+      "ESNext",
     ],
     "outDir": "./lib",
     "target": "esnext",
@@ -16,6 +16,6 @@
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "./index.ts"
+    "./"
   ]
 }

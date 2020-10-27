@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/changnan666/chrome-tools#readme",
   "dependencies": {
+    "@types/chrome": "0.0.125",
     "@types/jquery": "^3.5.3",
     "@types/uuid": "^8.3.0"
   }
