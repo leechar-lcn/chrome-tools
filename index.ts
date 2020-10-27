@@ -2,6 +2,8 @@
  * @version: v0.0.1
  */
 
+type Direction = "top" | "right" | "bottom" | "left";
+
 // @ts-ignore
 let enable = false;
 // @ts-ignore
@@ -159,8 +161,33 @@ const onClick = (e: MouseEvent) => {
   controllFloatWindow(enable);
 };
 
+/** 创建浮窗的方向控制器 */
+const createDirectionController = (
+  ele: HTMLElement,
+  direction: Direction
+) => {};
+
+/** 自动调整浮窗的位置 */
+const adjustmentFloatWindiwPos = (ele: HTMLElement, DOMRect: DOMRect) => {
+  let direction: Direction = "top";
+
+  const { y } = ele.getBoundingClientRect();
+  const { height, y: baseY } = DOMRect;
+
+  // 顶部被挡住了
+  if (y < 0) {
+    $(ele).css({ top: height + baseY });
+
+    direction = "bottom";
+  }
+
+  return direction;
+};
+
 /** 创建浮窗 */
-const createFloatWindow = (x: number, y: number, id: string) => {
+const createFloatWindow = (DOMRect: DOMRect, id: string) => {
+  const { x, y } = DOMRect;
+
   let div = document.getElementById(id);
 
   if (!div) {
@@ -194,6 +221,9 @@ const createFloatWindow = (x: number, y: number, id: string) => {
   $(div).html("");
   $(div).append(remember, clear);
 
+  const direction = adjustmentFloatWindiwPos(div, DOMRect);
+  createDirectionController(div, direction);
+
   return div;
 };
 
@@ -213,8 +243,8 @@ const controllFloatWindow = (use: boolean) => {
     const id = ele.dataset.autofill;
 
     if (use) {
-      const { x, y } = ele.getBoundingClientRect();
-      createFloatWindow(x, y, id!);
+      const DOMRect = ele.getBoundingClientRect();
+      createFloatWindow(DOMRect, id!);
     } else {
       let target = document.getElementById(id!);
       target && (target.style.display = "none");
