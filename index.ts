@@ -2,6 +2,8 @@
  * @version: v0.0.1
  */
 
+type Direction = "top" | "right" | "bottom" | "left";
+
 // 全局变量
 const FORMELEMENT = "input,textarea,select,radio";
 const ua = navigator.userAgent;
@@ -136,6 +138,8 @@ const onRemember = (id: string) => {
     const key = target.dataset.autofillPath;
     // @ts-ignore
     setCache(key, target.value);
+
+    $(`#${id}`).css("display", "none");
   }
 };
 
@@ -150,6 +154,8 @@ const onClear = (id: string) => {
     if (key) {
       clearCache(key);
     }
+
+    $(`#${id}`).css("display", "none");
   }
 };
 
@@ -157,7 +163,6 @@ const onClear = (id: string) => {
 const onClick = (e: MouseEvent) => {
   // @ts-ignore
   e.target.style.backgroundColor = (enable = !enable) ? "blue" : "gray";
-  controllFloatWindow(enable);
 };
 
 /** 自动调整浮窗的位置 */
@@ -186,7 +191,7 @@ const createFloatWindow = (DOMRect: DOMRect, id: string) => {
   div.style.cssText = `
 	width: 100px;
 	height:	40px;
-	display: flex;
+	display: none;
 	justify-content: center;
 	align-items: center;
 	position: absolute;
@@ -213,8 +218,8 @@ const createFloatWindow = (DOMRect: DOMRect, id: string) => {
   return div;
 };
 
-/** 控制浮窗的显示状态 */
-const controllFloatWindow = (use: boolean) => {
+/** 创建浮窗 */
+const readyCreate = () => {
   const allForm = [...document.querySelectorAll(FORMELEMENT)]
     .filter((ele: any) => ele.type !== "submit")
     .map((ele: any) => {
@@ -227,14 +232,13 @@ const controllFloatWindow = (use: boolean) => {
 
   allForm.forEach((ele) => {
     const id = ele.dataset.autofill;
+    const DOMRect = ele.getBoundingClientRect();
 
-    if (use) {
-      const DOMRect = ele.getBoundingClientRect();
-      createFloatWindow(DOMRect, id!);
-    } else {
-      let target = document.getElementById(id!);
-      target && (target.style.display = "none");
-    }
+    ele.addEventListener("focus", () => {
+      enable && $(`#${id}`).css("display", "flex");
+    });
+
+    createFloatWindow(DOMRect, id!);
   });
 };
 
@@ -246,7 +250,6 @@ const toggleTrigger = () => {
   setCache("autoFill", display);
 
   if (display === "none" && enable) {
-    controllFloatWindow((enable = false));
     $(trigger).css({ backgroundColor: "gray" });
   }
 };
@@ -274,10 +277,11 @@ const start = () => {
   const paths = injectPathForFormElement(document.body.children as any);
   restoreDataFromStorage(paths);
 
+  readyCreate();
+
   trigger = createTrigger();
   trigger.addEventListener("click", onClick);
 
-  window.addEventListener("resize", () => controllFloatWindow(enable));
   window.addEventListener("keydown", keydown);
 };
 
