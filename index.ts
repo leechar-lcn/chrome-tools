@@ -101,6 +101,7 @@ const restoreDataFromStorage = (paths: string[]) => {
 
 /** 创建触发器 */
 const createTrigger = () => {
+  const display = getCache("autoFill") || "block";
   const div = document.createElement("div");
   div.innerText = "AutoFill";
   div.style.cssText = `
@@ -111,7 +112,8 @@ const createTrigger = () => {
 	text-align: center;
 	line-height: 80px;
 	width: 80px;
-	height: 80px;
+  height: 80px;
+  display: ${display};
 	border-radius: 50%;
 	background-color: gray;
 	color: #fff;
@@ -225,6 +227,7 @@ const toggleTrigger = () => {
   const display = status === "block" ? "none" : "block";
 
   $(trigger).css({ display });
+  setCache("autoFill", display);
 
   if (display === "none" && enable) {
     controllFloatWindow((enable = false));
@@ -241,6 +244,14 @@ const keydown = (e: KeyboardEvent) => {
       toggleTrigger();
     }
   }
+
+  if (isWin) {
+    const { ctrlKey, key, shiftKey } = e;
+    if (ctrlKey && shiftKey && key.toLocaleLowerCase() === "f") {
+      e.preventDefault();
+      toggleTrigger();
+    }
+  }
 };
 
 const paths = injectPathForFormElement(document.body.children as any, "0");
@@ -251,5 +262,3 @@ trigger.addEventListener("click", onClick);
 
 window.addEventListener("resize", () => controllFloatWindow(enable));
 window.addEventListener("keydown", keydown);
-
-console.log(isMac);
