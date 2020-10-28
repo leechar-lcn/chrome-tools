@@ -199,7 +199,9 @@ const createFloatWindow = (DOMRect: DOMRect, id: string) => {
 	left: ${x}px;
 	top: ${y - 40}px;
 	background: blue;
-	color: #fff;
+  color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 0 4px blue;
 `;
 
   const remember = $(
